@@ -121,6 +121,12 @@ class MainActivity : AppCompatActivity() {
         val rawScores = outputTensor.dataAsFloatArray
         println(rawScores.joinToString(", "))
 
+        var maxScore = -Float.MAX_VALUE
+
+        for (score in rawScores) {
+            println(score)
+        }
+
         // Normalize the scores using softmax
         val normalizedScores = softmax(rawScores)
 

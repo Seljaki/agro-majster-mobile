@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Agro Majšter Mobile"
 include(":app")
+include(":app:lib")

@@ -15,20 +15,27 @@ val SELJAKI_NET_SERVER = "https://seljakinet-server.schnapsen66.eu"
 
 val client = HttpClient(CIO)
 
-suspend fun recognizeWeather(image: ByteArray, contentHeader: String): WeatherPrediction? {
-    val response: HttpResponse = client
-        .submitFormWithBinaryData(
-            url = "$SELJAKI_NET_SERVER/predict",
-            formData = formData {
-                append("file", image, Headers.build {
-                    append(HttpHeaders.ContentType, contentHeader)
-                })
-            }
-        )
+suspend fun recognizeWeather(image: ByteArray, contentType: String): WeatherPrediction? {
+    return try {
+        val imageFormat = contentType.substring(6, contentType.length)
+        val response: HttpResponse = client
+            .submitFormWithBinaryData(
+                url = "$SELJAKI_NET_SERVER/predict",
+                formData = formData {
+                    append("file", image, Headers.build {
+                        append(HttpHeaders.ContentDisposition, "form-data; name=\"file\"; filename=\"upload.$imageFormat\"")
+                        append(HttpHeaders.ContentType, contentType)
+                    })
+                }
+            )
 
-    if (response.status != HttpStatusCode.OK)
-        return null
+        if (response.status != HttpStatusCode.OK)
+            return null
 
-    val body = response.bodyAsText()
-    return Json.decodeFromString(body)
+        val body = response.bodyAsText()
+        return Json.decodeFromString(body)
+    } catch (e: Exception) {
+        println(e)
+        null
+    }
 }

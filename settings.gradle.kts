@@ -9,6 +9,9 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven {
+            url = uri("jitpack.io")
+        }
     }
 }
 dependencyResolutionManagement {
@@ -21,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Agro Majšter Mobile"
 include(":app")
+include(":app:lib")

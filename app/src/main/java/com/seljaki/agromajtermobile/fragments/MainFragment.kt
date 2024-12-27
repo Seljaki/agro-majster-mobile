@@ -27,12 +27,12 @@ class MainFragment : Fragment() {
 
         binding.takePictureBtn.setOnClickListener{openImage()}
     }
-    
-    fun openImage() {
+
+    private fun openImage() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-    val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             val action = MainFragmentDirections.actionMainFragmentToProcessImageFragment(uri.toString())

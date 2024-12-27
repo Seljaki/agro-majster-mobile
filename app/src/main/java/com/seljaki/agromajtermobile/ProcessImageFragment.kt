@@ -9,7 +9,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.lifecycleScope
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.seljaki.agromajtermobile.databinding.FragmentProcessImageBinding
+import com.seljaki.lib.WeatherPrediction
 import com.seljaki.lib.recognizeWeather
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,12 +25,17 @@ import java.io.ByteArrayOutputStream
 
 class ProcessImageFragment : Fragment() {
     private lateinit var binding: FragmentProcessImageBinding
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentProcessImageBinding.inflate(layoutInflater, container, false)
+
+        return binding.main
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         val imageUriString = arguments?.let {
             ProcessImageFragmentArgs.fromBundle(it).imageUri
@@ -34,11 +45,9 @@ class ProcessImageFragment : Fragment() {
         val imageUri: Uri? = imageUriString?.let { Uri.parse(it) }
         if(imageUri != null)
             getImagePrediction(imageUri)
-
-        return binding.main
     }
 
-    fun getImagePrediction(uri: Uri) {
+    private fun getImagePrediction(uri: Uri) {
         try {
             // Retrieve content resolver and decode URI to Bitmap
             val contentResolver = requireContext().contentResolver
@@ -53,6 +62,7 @@ class ProcessImageFragment : Fragment() {
                 if (isCompressed) {
                     val imageBytes = outputStream.toByteArray()
                     outputStream.close()
+                    binding.imagePreview.setImageBitmap(bitmap)
 
                     // Use the proper content type for JPEG
                     val contentType = "image/jpeg"
@@ -62,6 +72,8 @@ class ProcessImageFragment : Fragment() {
                         val prediction = recognizeWeather(imageBytes, contentType)
                         withContext(Dispatchers.Main) {
                             if (prediction != null) {
+                                binding.predictionTextView.text = getString(R.string.predicted_weather, prediction.getPredicted())
+                                setChart(prediction)
                                 Log.d("WeatherPrediction", "Prediction result: $prediction")
                             } else {
                                 Log.d("WeatherPrediction", "Failed to get prediction.")
@@ -77,5 +89,9 @@ class ProcessImageFragment : Fragment() {
         } catch (e: Exception) {
             Log.e("PhotoPicker", "Error processing image", e)
         }
+    }
+
+    fun setChart(prediction: WeatherPrediction) {
+        // TODO: add chart
     }
 }

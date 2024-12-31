@@ -10,7 +10,7 @@ data class Data (
     val longitude: Double,
     val latitude: Double,
     val prediction: WeatherPrediction,
-    val UUID: String?
+    val UUID: String? = java.util.UUID.randomUUID().toString()
 ) {
     fun toJson(): String {
         return Json.encodeToString(this)

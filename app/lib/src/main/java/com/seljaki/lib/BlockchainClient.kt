@@ -36,7 +36,7 @@ class BlockchainClient(
                     .callback { publish ->
                         try {
                             val message = String(publish.payloadAsBytes)
-                            println("Received message: $message")
+                            //println("Received message: $message")
                             onBlockchainReceived?.invoke(Blockchain.fromJson(message))
                         } catch (e: Exception) {
                             println("Error processing message: $e")

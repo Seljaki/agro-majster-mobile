@@ -4,7 +4,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class Blockchain (
-    val blocks: MutableList<Block> = mutableListOf()
+    var blocks: MutableList<Block> = mutableListOf()
 ) {
     companion object {
         fun fromJson(json: String): Blockchain {

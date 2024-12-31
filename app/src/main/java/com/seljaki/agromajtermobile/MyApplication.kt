@@ -29,7 +29,7 @@ class MyApplication : Application() {
         blockchainClient.onConnect = {
             blockchainClient.onBlockchainReceived = { blockchain: Blockchain ->
                 Log.d("blockchain", blockchain.toString())
-                this.blockchain = blockchain
+                this.blockchain.blocks = blockchain.blocks
             }
             blockchainClient.onNewBlockReceived = { block: Block ->
                 Log.d("blockchain", "New block: $block")

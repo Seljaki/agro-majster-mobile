@@ -20,4 +20,7 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:3.0.2")
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    // mqtt
+    implementation("com.hivemq:hivemq-mqtt-client:1.3.3")
 }

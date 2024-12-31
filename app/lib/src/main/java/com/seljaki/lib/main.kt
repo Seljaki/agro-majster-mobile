@@ -1,6 +1,6 @@
 package com.seljaki.lib
 
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.awaitAll
 
 fun main() {
     println("hello world")
@@ -51,4 +51,25 @@ fun main() {
     """.trimIndent()
     val blockchain = Blockchain.fromJson(blockchainJson)
     println(blockchain)
+    println(blockchain.blocks[0].data.toJson())
+
+    val blockchainClient = BlockchainClient("test123")
+    blockchainClient.onConnect = {
+        blockchainClient.onNewBlockReceived = { block ->
+            println("New block: $block")
+        }
+
+        blockchainClient.onError = { throwable ->
+            println(throwable)
+        }
+
+        blockchainClient.onBlockchainReceived = { blockchain ->
+            println("Blockchain: $blockchain")
+        }
+
+        println("subscribed to all events")
+        blockchainClient.requestBlockchain()
+    }
+    readln()
+    println("exit main")
 }

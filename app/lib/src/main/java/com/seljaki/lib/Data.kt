@@ -1,6 +1,8 @@
 package com.seljaki.lib
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Serializable
 data class Data (
@@ -9,4 +11,8 @@ data class Data (
     val latitude: Double,
     val prediction: WeatherPrediction,
     val UUID: String?
-)
+) {
+    fun toJson(): String {
+        return Json.encodeToString(this)
+    }
+}

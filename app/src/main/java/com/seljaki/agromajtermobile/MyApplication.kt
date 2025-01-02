@@ -20,9 +20,10 @@ class MyApplication : Application() {
         pref = PreferenceManager.getDefaultSharedPreferences(this)
 
         var deviceId = pref.getString("deviceId", "")
-        if (deviceId === "")
+        if (deviceId.isNullOrEmpty() || deviceId == "") {
             deviceId = UUID.randomUUID().toString();
-            putString("deviceId", deviceId!!)
+            putString("deviceId", deviceId)
+        }
 
         // blockchain client
         blockchainClient = BlockchainClient(deviceId)

@@ -16,14 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/processImageFragment"
-        android:name="com.seljaki.agromajtermobile.ProcessImageFragment"
+        android:name="com.seljaki.agromajtermobile.fragments.ProcessImageFragment"
         android:label="fragment_process_image"
-        tools:layout="@layout/fragment_process_image" >
-        <argument
-            android:name="imageUri"
-            app:argType="string" />
-        <action
-            android:id="@+id/action_processImageFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_process_image" />
 </navigation>

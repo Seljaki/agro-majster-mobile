@@ -1,9 +1,7 @@
-package com.seljaki.agromajtermobile
+package com.seljaki.agromajtermobile.fragments
 
 import android.content.res.Configuration
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -17,6 +15,8 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.seljaki.agromajtermobile.MyApplication
+import com.seljaki.agromajtermobile.R
 import com.seljaki.agromajtermobile.databinding.FragmentProcessImageBinding
 import com.seljaki.lib.WeatherPrediction
 import com.seljaki.lib.recognizeWeather
@@ -28,6 +28,16 @@ import java.io.ByteArrayOutputStream
 
 class ProcessImageFragment : Fragment() {
     private lateinit var binding: FragmentProcessImageBinding
+    private lateinit var image: Bitmap
+    private lateinit var app: MyApplication
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        app = requireActivity().application as MyApplication
+        image = app.imageToPredict!!
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,66 +50,48 @@ class ProcessImageFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val imageUriString = arguments?.let {
-            ProcessImageFragmentArgs.fromBundle(it).imageUri
-        }
-
-        // Use the URI string (convert to Uri if needed)
-        val imageUri: Uri? = imageUriString?.let { Uri.parse(it) }
-        if (imageUri != null)
-            getImagePrediction(imageUri)
-
+        binding.imagePreview.setImageBitmap(image)
+        binding.backgroundView.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.VISIBLE
         binding.buttonBack.setOnClickListener {
-            findNavController().navigate(ProcessImageFragmentDirections.actionProcessImageFragmentToMainFragment())
+            findNavController().popBackStack()
         }
+        predictWeather()
     }
 
-    private fun getImagePrediction(uri: Uri) {
-        try {
-            // Retrieve content resolver and decode URI to Bitmap
-            val contentResolver = requireContext().contentResolver
-            val inputStream = contentResolver.openInputStream(uri)
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            inputStream?.close()
+    private fun predictWeather() {
+        // Convert Bitmap to ByteArray in JPG format
+        val outputStream = ByteArrayOutputStream()
+        val isCompressed = image.compress(
+            Bitmap.CompressFormat.JPEG,
+            100,
+            outputStream
+        ) // Change to PNG if needed
+        if (isCompressed) {
+            val imageBytes = outputStream.toByteArray()
+            outputStream.close()
+            // Use the proper content type for JPEG
+            val contentType = "image/jpeg"
 
-            if (bitmap != null) {
-                // Convert Bitmap to ByteArray in JPG format
-                val outputStream = ByteArrayOutputStream()
-                val isCompressed = bitmap.compress(
-                    Bitmap.CompressFormat.JPEG,
-                    100,
-                    outputStream
-                ) // Change to PNG if needed
-                if (isCompressed) {
-                    val imageBytes = outputStream.toByteArray()
-                    outputStream.close()
-                    binding.imagePreview.setImageBitmap(bitmap)
-
-                    // Use the proper content type for JPEG
-                    val contentType = "image/jpeg"
-
-                    // Call the server API
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val prediction = recognizeWeather(imageBytes, contentType)
-                        withContext(Dispatchers.Main) {
-                            if (prediction != null) {
-                                binding.predictionTextView.text =
-                                    getString(R.string.predicted_weather, prediction.getPredicted())
-                                setChart(prediction)
-                                Log.d("WeatherPrediction", "Prediction result: $prediction")
-                            } else {
-                                Log.d("WeatherPrediction", "Failed to get prediction.")
-                            }
-                        }
+            // Call the server API
+            CoroutineScope(Dispatchers.IO).launch {
+                val prediction = recognizeWeather(imageBytes, contentType)
+                withContext(Dispatchers.Main) {
+                    if (prediction != null) {
+                        binding.predictionTextView.text =
+                            getString(R.string.predicted_weather, prediction.getPredicted())
+                        setChart(prediction)
+                        binding.backgroundView.visibility = View.GONE
+                        binding.progressBar.visibility = View.GONE
+                        Log.d("WeatherPrediction", "Prediction result: $prediction")
+                    } else {
+                        Log.d("WeatherPrediction", "Failed to get prediction.")
+                        binding.progressBar.visibility = View.GONE
                     }
-                } else {
-                    Log.e("PhotoPicker", "Failed to compress Bitmap.")
                 }
-            } else {
-                Log.e("PhotoPicker", "Failed to decode Bitmap from URI.")
             }
-        } catch (e: Exception) {
-            Log.e("PhotoPicker", "Error processing image", e)
+        } else {
+            Log.e("WeatherPrediction", "Failed to compress Bitmap.")
         }
     }
 

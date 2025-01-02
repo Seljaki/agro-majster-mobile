@@ -2,6 +2,7 @@ package com.seljaki.agromajtermobile
 
 import android.app.Application
 import android.content.SharedPreferences
+import android.graphics.Bitmap
 import android.preference.PreferenceManager
 import android.util.Log
 import com.seljaki.lib.Block
@@ -13,6 +14,7 @@ class MyApplication : Application() {
     lateinit var pref: SharedPreferences
     lateinit var blockchainClient: BlockchainClient
     var blockchain = Blockchain()
+    var imageToPredict: Bitmap? = null;
 
     override fun onCreate() {
         super.onCreate()

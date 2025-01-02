@@ -22,5 +22,8 @@
         <argument
             android:name="imageUri"
             app:argType="string" />
+        <action
+            android:id="@+id/action_processImageFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
     </fragment>
 </navigation>

@@ -1,5 +1,6 @@
 package com.seljaki.agromajtermobile
 
+import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -9,6 +10,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.ValueFormatter
 import com.seljaki.agromajtermobile.databinding.FragmentProcessImageBinding
 import com.seljaki.lib.WeatherPrediction
 import com.seljaki.lib.recognizeWeather
@@ -38,8 +46,12 @@ class ProcessImageFragment : Fragment() {
 
         // Use the URI string (convert to Uri if needed)
         val imageUri: Uri? = imageUriString?.let { Uri.parse(it) }
-        if(imageUri != null)
+        if (imageUri != null)
             getImagePrediction(imageUri)
+
+        binding.buttonBack.setOnClickListener {
+            findNavController().navigate(ProcessImageFragmentDirections.actionProcessImageFragmentToMainFragment())
+        }
     }
 
     private fun getImagePrediction(uri: Uri) {
@@ -53,7 +65,11 @@ class ProcessImageFragment : Fragment() {
             if (bitmap != null) {
                 // Convert Bitmap to ByteArray in JPG format
                 val outputStream = ByteArrayOutputStream()
-                val isCompressed = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream) // Change to PNG if needed
+                val isCompressed = bitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    100,
+                    outputStream
+                ) // Change to PNG if needed
                 if (isCompressed) {
                     val imageBytes = outputStream.toByteArray()
                     outputStream.close()
@@ -67,7 +83,8 @@ class ProcessImageFragment : Fragment() {
                         val prediction = recognizeWeather(imageBytes, contentType)
                         withContext(Dispatchers.Main) {
                             if (prediction != null) {
-                                binding.predictionTextView.text = getString(R.string.predicted_weather, prediction.getPredicted())
+                                binding.predictionTextView.text =
+                                    getString(R.string.predicted_weather, prediction.getPredicted())
                                 setChart(prediction)
                                 Log.d("WeatherPrediction", "Prediction result: $prediction")
                             } else {
@@ -87,6 +104,76 @@ class ProcessImageFragment : Fragment() {
     }
 
     fun setChart(prediction: WeatherPrediction) {
-        // TODO: add chart
+        val chart: BarChart = binding.barChart
+
+        val entries = listOf(
+            BarEntry(0f, prediction.rainy.toFloat()),
+            BarEntry(1f, prediction.cloudy.toFloat()),
+            BarEntry(2f, prediction.clear.toFloat())
+        )
+
+        val dataSet = BarDataSet(entries, "Weather Chances")
+        dataSet.setColors(
+            requireContext().getColor(R.color.blue_graph),
+            requireContext().getColor(R.color.green_graph),
+            requireContext().getColor(R.color.orange_graph)
+        )
+
+        dataSet.valueFormatter = PercentFormatter()
+        val barData = BarData(dataSet)
+        barData.barWidth = 0.9f
+
+        chart.data = barData
+        chart.description.isEnabled = false
+
+        val xAxis = chart.xAxis
+        xAxis.position = XAxis.XAxisPosition.BOTTOM
+        xAxis.setDrawGridLines(false)
+        xAxis.valueFormatter = XAxisValueFormatter(
+            listOf(
+                getString(R.string.rainy),
+                getString(R.string.cloudy),
+                getString(R.string.clear)
+            )
+        )
+        xAxis.granularity = 1f
+
+
+        chart.axisLeft.setDrawGridLines(false)
+        chart.axisRight.isEnabled = false
+
+        chart.setFitBars(true)
+
+        val textColor = if (isDarkMode()) {
+            requireContext().getColor(R.color.white)
+        } else {
+            requireContext().getColor(R.color.black)
+        }
+
+        xAxis.textColor = textColor
+        chart.axisLeft.textColor = textColor
+        chart.axisRight.textColor = textColor
+        dataSet.valueTextColor = textColor
+        chart.legend.isEnabled = false
+        chart.axisLeft.valueFormatter = PercentFormatter()
+
+        chart.invalidate()
+    }
+
+    fun isDarkMode(): Boolean {
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+    }
+
+    class PercentFormatter : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            return String.format("%.0f%%", value * 100)
+        }
+    }
+
+    class XAxisValueFormatter(private val labels: List<String>) : ValueFormatter() {
+        override fun getFormattedValue(value: Float): String {
+            return labels.getOrNull(value.toInt()) ?: value.toString()
+        }
     }
 }

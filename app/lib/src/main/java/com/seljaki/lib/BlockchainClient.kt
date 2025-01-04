@@ -73,4 +73,12 @@ class BlockchainClient(
             .payload(data.toJson().toByteArray())
             .send()
     }
+
+    fun disconnect() {
+        try {
+            mqttClient.disconnect()
+        } catch (e: Exception) {
+            println(e)
+        }
+    }
 }

@@ -15,14 +15,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.seljaki.agromajtermobile.BlockAdapter
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.databinding.FragmentMainBinding
+import com.seljaki.lib.Block
 import java.io.ByteArrayOutputStream
 
 
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var app: MyApplication
+    private val blocks = mutableListOf<Block>()
+    private lateinit var blockAdapter: BlockAdapter
     private val CAMERA_REQUEST_CODE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +41,10 @@ class MainFragment : Fragment() {
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
 
+        blockAdapter = BlockAdapter(blocks)
+        binding.blockchainRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.blockchainRecyclerView.adapter = blockAdapter
+
         return binding.root
     }
 
@@ -44,6 +53,15 @@ class MainFragment : Fragment() {
 
         binding.takePictureBtn.setOnClickListener{ launchCamera() }
         binding.openGalleryBtn.setOnClickListener{ openImage() }
+
+        (requireActivity().application as MyApplication).blockchainClient.onNewBlockReceived =
+            { block ->
+                requireActivity().runOnUiThread {
+                    blocks.add(block)
+                    blockAdapter.notifyItemInserted(blocks.size - 1)
+                }
+            }
+
     }
 
     private fun openImage() {
@@ -55,7 +73,6 @@ class MainFragment : Fragment() {
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             try {
-                // Retrieve content resolver and decode URI to Bitmap
                 val contentResolver = requireContext().contentResolver
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)

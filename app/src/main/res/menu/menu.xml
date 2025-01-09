@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/person"
-        android:title="Person"
+        android:id="@+id/chainListFragment"
+        android:title="List view"
         android:icon="@drawable/camera_outline"/>
     <item
-        android:id="@+id/home"
-        android:title="Home"
+        android:id="@+id/mapFragment"
+        android:title="Map view"
         android:icon="@drawable/camera_outline"/>
 </menu>

@@ -16,12 +16,14 @@ class MyApplication : Application() {
     var blockchain = Blockchain()
     var imageToPredict: Bitmap? = null;
 
+    lateinit var deviceId: String
+
     override fun onCreate() {
         super.onCreate()
 
         pref = PreferenceManager.getDefaultSharedPreferences(this)
 
-        var deviceId = pref.getString("deviceId", "")
+        deviceId = pref.getString("deviceId", "") ?: ""
         if (deviceId.isNullOrEmpty() || deviceId == "") {
             deviceId = UUID.randomUUID().toString();
             putString("deviceId", deviceId)

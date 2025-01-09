@@ -68,4 +68,7 @@ dependencies {
 
     // Material
     implementation("com.google.android.material:material:1.12.0")
+
+    // Maps
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 }

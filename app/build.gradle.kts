@@ -65,4 +65,7 @@ dependencies {
     implementation("com.hivemq:hivemq-mqtt-client:1.3.3")
 
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Material
+    implementation("com.google.android.material:material:1.12.0")
 }

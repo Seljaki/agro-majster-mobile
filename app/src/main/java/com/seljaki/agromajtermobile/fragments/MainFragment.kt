@@ -1,6 +1,8 @@
 package com.seljaki.agromajtermobile.fragments
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -20,7 +22,10 @@ import com.seljaki.agromajtermobile.BlockAdapter
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.databinding.FragmentMainBinding
 import com.seljaki.lib.Block
+import com.seljaki.lib.Blockchain
+import com.seljaki.lib.BlockchainClient
 import java.io.ByteArrayOutputStream
+
 
 
 class MainFragment : Fragment() {
@@ -32,7 +37,6 @@ class MainFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         app = requireActivity().application as MyApplication
     }
     override fun onCreateView(
@@ -41,7 +45,7 @@ class MainFragment : Fragment() {
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
 
-        blockAdapter = BlockAdapter(blocks)
+        blockAdapter = BlockAdapter(app.blockchain.blocks)
         binding.blockchainRecyclerView.layoutManager = LinearLayoutManager(context)
         binding.blockchainRecyclerView.adapter = blockAdapter
 
@@ -54,13 +58,17 @@ class MainFragment : Fragment() {
         binding.takePictureBtn.setOnClickListener{ launchCamera() }
         binding.openGalleryBtn.setOnClickListener{ openImage() }
 
-        (requireActivity().application as MyApplication).blockchainClient.onNewBlockReceived =
-            { block ->
-                requireActivity().runOnUiThread {
-                    blocks.add(block)
-                    blockAdapter.notifyItemInserted(blocks.size - 1)
-                }
+        app.blockchainClient.onNewBlockReceived = { block ->
+            requireActivity().runOnUiThread {
+                blockAdapter.notifyItemInserted(app.blockchain.blocks.size - 1)
             }
+        }
+
+        app.blockchainClient.onBlockchainReceived = { blockchain ->
+            requireActivity().runOnUiThread {
+                blockAdapter.notifyDataSetChanged()
+            }
+        }
 
     }
 

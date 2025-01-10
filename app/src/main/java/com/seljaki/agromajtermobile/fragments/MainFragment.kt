@@ -31,7 +31,6 @@ import java.io.ByteArrayOutputStream
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var app: MyApplication
-    private val blocks = mutableListOf<Block>()
     private lateinit var blockAdapter: BlockAdapter
     private val CAMERA_REQUEST_CODE = 100
 

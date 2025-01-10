@@ -67,7 +67,7 @@ class MapsFragment : Fragment() {
 
         for(block in blocks) {
             if(block.index == 0) continue
-            val geoPoint = GeoPoint(block.data.latitude, block.data.longitude)
+            val geoPoint = GeoPoint(block.data.longitude, block.data.latitude)
             points.add(geoPoint)
 
             val marker = Marker(map)

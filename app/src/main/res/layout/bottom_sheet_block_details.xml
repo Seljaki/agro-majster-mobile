@@ -15,47 +15,57 @@
         <TextView
             android:id="@+id/indexTextView"
             android:padding="3dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Index: "
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/timestampTextView"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/timestampTextView"
             android:padding="3dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date: "
             app:layout_constraintTop_toBottomOf="@id/indexTextView"
+            app:layout_constraintBottom_toTopOf="@+id/nonceTextView"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/nonceTextView"
             android:padding="3dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Nonce: "
             app:layout_constraintTop_toBottomOf="@id/timestampTextView"
+            app:layout_constraintBottom_toTopOf="@+id/minerTextView"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/minerTextView"
             android:padding="3dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Miner: "
             app:layout_constraintTop_toBottomOf="@id/nonceTextView"
+            app:layout_constraintBottom_toTopOf="@+id/difficultyTextViewBD"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/difficultyTextViewBD"
             android:padding="3dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Difficulty: "
             app:layout_constraintTop_toBottomOf="@id/minerTextView"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <androidx.constraintlayout.widget.Guideline
@@ -63,14 +73,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_begin="128dp" />
+            app:layout_constraintGuide_begin="154dp" />
         <TextView
-            android:id="@+id/HashTextViewBD"
+            android:id="@+id/hashTextViewBD"
             android:padding="3dp"
-            android:layout_width="match_parent"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Difficulty: "
+            android:text="Hash: "
+            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"/>
+        <TextView
+            android:id="@+id/PrevHashTextViewBD"
+            android:padding="3dp"
+            android:layout_marginStart="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prev hash: "
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/hashTextViewBD"
             app:layout_constraintStart_toStartOf="parent"/>
 
 

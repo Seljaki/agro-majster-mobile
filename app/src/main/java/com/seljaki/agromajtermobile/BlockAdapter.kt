@@ -67,6 +67,10 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
             showDetailsBottomSheet(block)
             true
         }
+        binding.root.setOnClickListener {
+            showDataBottomSheet(block)
+            true
+        }
     }
 
     override fun getItemCount(): Int {
@@ -74,11 +78,7 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         return blocks.size
     }
 
-    private fun convertTimestampToReadableDate(timestamp: Long): String {
-        val date = Date(timestamp * 1000)
-        val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
-        return format.format(date)
-    }
+
 
     private fun getPredictionImage(prediction: String): Drawable{
         return when (prediction){
@@ -128,14 +128,26 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         bottomSheetDialog.setContentView(binding.root)
 
         // Nastavimo podatke za prikaz
-        binding.hashTextView.text = "Hash: ${block.hash}"
-        binding.timestampTextView.text = "Timestamp: ${block.timestamp}"
-        binding.difficultyTextView.text = "Difficulty: ${block.difficulty}"
-        binding.coordinatesTextView.text = "Coordinates: ${block.data.latitude}, ${block.data.longitude}"
-        binding.weatherPredictionTextView.text = "Weather Prediction: ${block.data.prediction.getPredicted()}"
+        binding.indexTextView.text = "Index: ${block.index}"
+        binding.timestampTextView.text = "Date: ${convertTimestampToReadableDate(block.timestamp)}"
+        binding.difficultyTextViewBD.text = "Difficulty: ${block.difficulty}"
+        binding.minerTextView.text = "Miner: ${block.miner.toString()}"
+        binding.nonceTextView.text = "Nonce: ${block.nonce}"
+        binding.hashTextViewBD.text = "Hash: ${block.hash}"
+        binding.prevHashTextViewBD.text = "Prev Hash: ${block.previousHash}"
 
         // Prikažemo kartico
         bottomSheetDialog.show()
+    }
+
+    private fun showDataBottomSheet(block: Block){
+
+    }
+
+    private fun convertTimestampToReadableDate(timestamp: Long): String {
+        val date = Date(timestamp * 1000)
+        val format = SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault())
+        return format.format(date)
     }
 }
 

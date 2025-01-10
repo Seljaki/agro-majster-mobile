@@ -13,45 +13,66 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <TextView
-            android:id="@+id/hashTextView"
+            android:id="@+id/indexTextView"
+            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Hash: "
+            android:text="Index: "
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
             android:id="@+id/timestampTextView"
+            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Timestamp: "
-            app:layout_constraintTop_toBottomOf="@id/hashTextView"
+            android:text="Date: "
+            app:layout_constraintTop_toBottomOf="@id/indexTextView"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/difficultyTextView"
+            android:id="@+id/nonceTextView"
+            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Difficulty: "
+            android:text="Nonce: "
             app:layout_constraintTop_toBottomOf="@id/timestampTextView"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/coordinatesTextView"
+            android:id="@+id/minerTextView"
+            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Coordinates: "
-            app:layout_constraintTop_toBottomOf="@id/difficultyTextView"
+            android:text="Miner: "
+            app:layout_constraintTop_toBottomOf="@id/nonceTextView"
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/weatherPredictionTextView"
+            android:id="@+id/difficultyTextViewBD"
+            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Weather Prediction: "
-            app:layout_constraintTop_toBottomOf="@id/coordinatesTextView"
+            android:text="Difficulty: "
+            app:layout_constraintTop_toBottomOf="@id/minerTextView"
             app:layout_constraintStart_toStartOf="parent"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="128dp" />
+        <TextView
+            android:id="@+id/HashTextViewBD"
+            android:padding="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Difficulty: "
+            app:layout_constraintTop_toBottomOf="@id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

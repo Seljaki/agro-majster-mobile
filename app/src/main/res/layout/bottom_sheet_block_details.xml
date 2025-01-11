@@ -22,7 +22,8 @@
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/timestampTextView"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/timestampTextView"
@@ -33,7 +34,8 @@
             android:text="Date: "
             app:layout_constraintTop_toBottomOf="@id/indexTextView"
             app:layout_constraintBottom_toTopOf="@+id/nonceTextView"
-            app:layout_constraintStart_toStartOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <TextView
             android:id="@+id/nonceTextView"

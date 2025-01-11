@@ -46,6 +46,7 @@ class MainFragment : Fragment() {
 
         blockAdapter = BlockAdapter(app.blockchain.blocks)
         binding.blockchainRecyclerView.layoutManager = LinearLayoutManager(context)
+        //val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.blockchainRecyclerView.adapter = blockAdapter
 
         return binding.root

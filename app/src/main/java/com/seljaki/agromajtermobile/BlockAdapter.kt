@@ -59,17 +59,9 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         val block = blocks[position]
         val binding = holder.binding
 
-        binding.indexPlaceholderTextView.text = block.index.toString()
-        binding.timestampPlaceHolderTextView.text = convertTimestampToReadableDate(block.timestamp)
-        val municipality = getMunicipalityFromCoordinates(
-            context, block.data.latitude, block.data.longitude) { municipality ->
-            if (municipality != null) {
-                println("Občina: $municipality")
-            } else {
-                println("Lokacije ni bilo mogoče najti")
-            }
-        }
-        binding.difficultyPlaceholderTextView.text = municipality.toString()
+        binding.indexTextView.text = "Block: ${block.index}"
+        //binding.timestampPlaceHolderTextView.text = convertTimestampToReadableDate(block.timestamp)
+        //binding.difficultyPlaceholderTextView.text = municipality.toString()
         binding.weatherPredictionPlaceHolderTextView.text = block.data.prediction.getPredicted()
 
         val predictionImage = getPredictionImage(block.data.prediction.getPredicted())
@@ -139,7 +131,6 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         val binding = BottomSheetBlockDetailsBinding.inflate(LayoutInflater.from(context))
         bottomSheetDialog.setContentView(binding.root)
 
-        // Nastavimo podatke za prikaz
         binding.indexTextView.text = "Index: ${block.index}"
         binding.timestampTextView.text = "Date: ${convertTimestampToReadableDate(block.timestamp)}"
         binding.difficultyTextViewBD.text = "Difficulty: ${block.difficulty}"
@@ -148,7 +139,6 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         binding.hashTextViewBD.text = "Hash: ${block.hash}"
         binding.prevHashTextViewBD.text = "Prev Hash: ${block.previousHash}"
 
-        // Prikažemo kartico
         bottomSheetDialog.show()
     }
 
@@ -156,6 +146,10 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         val bottomSheetDialog = BottomSheetDialog(context)
         val binding = BottomSheetBlockDataBinding.inflate(LayoutInflater.from(context))
         bottomSheetDialog.setContentView(binding.root)
+
+        binding.locationButton.setOnClickListener{
+            //viewLocation(block.data.longitude, block.data.latitude)
+        }
 
         binding.indexTextView.text = "Index: ${block.index}"
         binding.timestampTextView.text = "Date: ${convertTimestampToReadableDate(block.timestamp)}"

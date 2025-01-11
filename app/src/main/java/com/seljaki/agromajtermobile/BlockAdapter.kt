@@ -92,39 +92,6 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         }
     }
 
-    fun getMunicipalityFromCoordinates(context: Context, latitude: Double, longitude: Double, callback: (String?) -> Unit) {
-        val geocoder = Geocoder(context, Locale.getDefault())
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            geocoder.getFromLocation(latitude, longitude, 1, object : Geocoder.GeocodeListener {
-                override fun onGeocode(addresses: MutableList<Address>) {
-                    if (addresses.isNotEmpty()) {
-                        val municipality = addresses[0].subAdminArea ?: addresses[0].locality
-                        callback(municipality)
-                    } else {
-                        callback(null)
-                    }
-                }
-
-                override fun onError(errorMessage: String?) {
-                    callback(null)
-                }
-            })
-        } else {
-            // Backwards compatibility for older Android versions
-            try {
-                val addresses = geocoder.getFromLocation(latitude, longitude, 1)
-                if (addresses?.isNotEmpty() == true) {
-                    callback(addresses[0].subAdminArea ?: addresses[0].locality)
-                } else {
-                    callback(null)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                callback(null)
-            }
-        }
-    }
 
     private fun showDetailsBottomSheet(block: Block) {
         val bottomSheetDialog = BottomSheetDialog(context)
@@ -134,7 +101,7 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         binding.indexTextView.text = "Index: ${block.index}"
         binding.timestampTextView.text = "Date: ${convertTimestampToReadableDate(block.timestamp)}"
         binding.difficultyTextViewBD.text = "Difficulty: ${block.difficulty}"
-        binding.minerTextView.text = "Miner: ${block.miner.toString()}"
+        binding.minerTextView.text = "Miner: ${block.miner ?: "No miner"}"
         binding.nonceTextView.text = "Nonce: ${block.nonce}"
         binding.hashTextViewBD.text = "Hash: ${block.hash}"
         binding.prevHashTextViewBD.text = "Prev Hash: ${block.previousHash}"

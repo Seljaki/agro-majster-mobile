@@ -8,4 +8,5 @@
     <string name="cloudy">Cloudy</string>
     <string name="go_back">Go back</string>
     <string name="send_to_blockchain">Send to blockchain</string>
+    <string name="view_location_button">View Location</string>
 </resources>

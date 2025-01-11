@@ -24,19 +24,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/card2"
             android:layout_margin="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="10dp"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
         <TextView
             android:id="@+id/indexTextView"
-            android:padding="3dp"
+            android:padding="6dp"
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Index: "
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/timestampTextView"
@@ -45,11 +44,10 @@
 
         <TextView
             android:id="@+id/timestampTextView"
-            android:padding="3dp"
+            android:padding="6dp"
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date: "
             app:layout_constraintTop_toBottomOf="@id/indexTextView"
             app:layout_constraintBottom_toTopOf="@+id/nonceTextView"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,11 +55,10 @@
 
         <TextView
             android:id="@+id/nonceTextView"
-            android:padding="3dp"
+            android:padding="6dp"
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Nonce: "
             app:layout_constraintTop_toBottomOf="@id/timestampTextView"
             app:layout_constraintBottom_toTopOf="@+id/minerTextView"
             app:layout_constraintStart_toStartOf="parent"
@@ -69,11 +66,10 @@
 
         <TextView
             android:id="@+id/minerTextView"
-            android:padding="3dp"
+            android:padding="6dp"
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Miner: "
             app:layout_constraintTop_toBottomOf="@id/nonceTextView"
             app:layout_constraintBottom_toTopOf="@+id/difficultyTextViewBD"
             app:layout_constraintStart_toStartOf="parent"
@@ -81,25 +77,16 @@
 
         <TextView
             android:id="@+id/difficultyTextViewBD"
-            android:padding="3dp"
+            android:padding="6dp"
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Difficulty: "
             app:layout_constraintTop_toBottomOf="@id/minerTextView"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
-
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="188dp" />
 
         <com.google.android.material.card.MaterialCardView
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -113,8 +100,8 @@
             app:layout_constraintTop_toBottomOf="@id/card"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_margin="8dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="4dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="10dp"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -126,7 +113,8 @@
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hash: "
+
+            android:textAlignment="center"
             android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/prevHashTextViewBD"
@@ -140,7 +128,7 @@
             android:layout_marginStart="7dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Prev hash: "
+            android:textAlignment="center"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@id/hashTextViewBD"
             app:layout_constraintBottom_toBottomOf="parent"

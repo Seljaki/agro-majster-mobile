@@ -3,6 +3,7 @@ package com.seljaki.lib
 import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
 
+
 val BLOCKCHAIN_MQTT_HOST_URL = "smd.schnapsen66.eu"
 val BLOCKCHAIN_MQTT_HOST_PORT = 3335
 
@@ -68,6 +69,7 @@ class BlockchainClient(
     }
 
     fun sendDataToMine(data: Data) {
+        System.out.println(data.toString())
         mqttClient.publishWith()
             .topic("blockchain/add")
             .payload(data.toJson().toByteArray())

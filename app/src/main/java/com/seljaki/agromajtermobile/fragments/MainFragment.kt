@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.seljaki.agromajtermobile.BlockAdapter
 import com.seljaki.agromajtermobile.MyApplication
@@ -45,7 +46,7 @@ class MainFragment : Fragment() {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
 
         blockAdapter = BlockAdapter(app.blockchain.blocks)
-        binding.blockchainRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.blockchainRecyclerView.layoutManager = GridLayoutManager(context, 4)
         //val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.blockchainRecyclerView.adapter = blockAdapter
 

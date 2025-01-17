@@ -39,6 +39,7 @@ class MainFragment : Fragment() {
         super.onCreate(savedInstanceState)
         app = requireActivity().application as MyApplication
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -76,7 +77,6 @@ class MainFragment : Fragment() {
     private fun openImage() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
-
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {

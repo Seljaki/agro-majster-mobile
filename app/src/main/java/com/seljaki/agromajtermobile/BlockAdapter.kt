@@ -15,6 +15,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.recyclerview.widget.RecyclerView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -115,7 +117,10 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         bottomSheetDialog.setContentView(binding.root)
 
         binding.locationButton.setOnClickListener{
-            //viewLocation(block.data.longitude, block.data.latitude)
+            val action = NavGraphDirections.actionGlobalMapsFragment(block.index - 1)
+            val navController = (context as? MainActivity)?.navController
+            navController?.navigate(action)
+            bottomSheetDialog.dismiss()
         }
 
         binding.indexTextView.text = "Index: ${block.index}"

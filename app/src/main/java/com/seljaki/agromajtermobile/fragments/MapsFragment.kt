@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat.getDrawable
+import androidx.navigation.fragment.navArgs
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.R
 import com.seljaki.agromajtermobile.databinding.FragmentMapsBinding
@@ -25,6 +26,7 @@ import java.util.UUID
 class MapsFragment : Fragment() {
     lateinit var binding: FragmentMapsBinding
     lateinit var app: MyApplication
+    private val args : MapsFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,9 +88,11 @@ class MapsFragment : Fragment() {
             map.overlays.add(marker)
         }
 
-        if (points.isNotEmpty()) {
+        if (args.blockchainIndex != -1) {
+            map.setExpectedCenter(points[args.blockchainIndex])
+        } else if (points.isNotEmpty()) {
             val boundingBox = BoundingBox.fromGeoPointsSafe(points)
-            map.setExpectedCenter(points.get(0))
+            //map.setExpectedCenter(points.get(0))
             //map.zoomToBoundingBox(boundingBox, true) // Adjusts zoom level to fit all markers
         }
     }

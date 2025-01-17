@@ -70,8 +70,8 @@ class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val blocks = app.blockchain.blocks;
         map.overlays.clear()
         for(block in blocks) {
-            Log.d("MapsFragment", "Processing block: index=${block.index}, timestamp=${block.timestamp}, selectedTimeFrame=$selectedTimeFrame")
             if(block.index == 0 || (block.timestamp < selectedTimeFrame && selectedTimeFrame != 0L)) continue
+            Log.d("MapsFragment", "Processing block: index=${block.index}, timestamp=${block.timestamp}, selectedTimeFrame=$selectedTimeFrame")
             val geoPoint = GeoPoint(block.data.longitude, block.data.latitude)
             points.add(geoPoint)
             val marker = Marker(map)
@@ -114,7 +114,7 @@ class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(parent: AdapterView<*>, view: View?, pos: Int, id: Long) {
         val selectedItem = parent.getItemAtPosition(pos).toString()
-        val date = Instant.now().epochSecond
+        val date = System.currentTimeMillis() / 1000
         val oneDayInMillis: Long = 24L * 60L * 60L
         when (selectedItem) {
             "Last day" -> {

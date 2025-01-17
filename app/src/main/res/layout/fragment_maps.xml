@@ -13,7 +13,33 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+    </org.osmdroid.views.MapView>
+
+    <TextView
+        android:id="@+id/spinnerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/display_markers_added"
+        android:textSize="16sp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@+id/spinner"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/spinner" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="145dp"
+        android:layout_height="41dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="16dp"
+        android:background= "@drawable/spinner_background"
+        app:layout_constraintStart_toEndOf="@+id/spinnerLabel"
+        app:layout_constraintTop_toTopOf="@+id/mapView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

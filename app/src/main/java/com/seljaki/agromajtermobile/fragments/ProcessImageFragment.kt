@@ -81,24 +81,43 @@ class ProcessImageFragment : Fragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         binding.buttonBlockchain.setOnClickListener {
-            getCurrentLocationAndTemperature { latitude, longitude, temperature ->
 
-                Log.d("Seznor info","lat: " + latitude + ", long: " + longitude + ", temp: " + temperature)
-
-                val dataToMine = Data(
-                    temperature = temperature,
-                    longitude = longitude,
-                    latitude = latitude,
-                    prediction = prediction
-                )
-
-                val blockchainClient = BlockchainClient(app.deviceId)
-                blockchainClient.sendDataToMine(dataToMine)
-
-                blockchainClient.onError = { throwable ->
-                    Log.e("BlockchainClient", "Napaka pri pošiljanju podatkov: ${throwable.message}")
+            getUserLocation { location ->
+                if (location != null) {
+                    Log.d("Seznor info","lat: " + location.latitude + ", long: " + location.longitude)
                 }
+                else {
+                    Log.d("Seznor info", "Ni bilo mogoče pridobiti trenutne lokacije.")
+                }
+
+                val dataToMine = location?.let { it1 ->
+                    Data(
+                        temperature = 0.0,
+                        longitude = it1.longitude,
+                        latitude = it1.latitude,
+                        prediction = prediction
+                    )
+                }
+                if (dataToMine != null) {
+                    app.blockchainClient.sendDataToMine(dataToMine)
+                }
+                
             }
+
+
+//            getCurrentLocationAndTemperature { latitude, longitude, temperature ->
+//
+//                Log.d("Seznor info","lat: " + latitude + ", long: " + longitude + ", temp: " + temperature)
+//
+//                val dataToMine = Data(
+//                    temperature = temperature,
+//                    longitude = longitude,
+//                    latitude = latitude,
+//                    prediction = prediction
+//                )
+//
+//                app.blockchainClient.sendDataToMine(dataToMine)
+//            }
         }
     }
 
@@ -132,38 +151,34 @@ class ProcessImageFragment : Fragment() {
     }
 
 
-//    @SuppressLint("MissingPermission")
-//    private fun getUserLocation(callback: (Location?) -> Unit) {
-//        if (!isLocationEnabled()) {
-//            Toast.makeText(requireContext(), "Please enable location services", Toast.LENGTH_SHORT).show()
-//            callback(null)
-//            return
-//        }
-//
-//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
-//
-//        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
-//            callback(null)
-//            return
-//        }
-//
-//        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-//            if (location != null) {
-//                val customLocation = Location(
-//                    latitude = location.latitude,
-//                    longitude = location.longitude
-//                )
-//                callback(customLocation)
-//            } else {
-//                Toast.makeText(requireContext(), "Could not fetch location", Toast.LENGTH_SHORT).show()
-//                callback(null)
-//            }
-//        }.addOnFailureListener { exception ->
-//            Log.e("LocationError", "Error fetching location: ${exception.message}")
-//            callback(null)
-//        }
-//    }
+    @SuppressLint("MissingPermission")
+    private fun getUserLocation(callback: (Location?) -> Unit) {
+        if (!isLocationEnabled()) {
+            Toast.makeText(requireContext(), "Please enable location services", Toast.LENGTH_SHORT).show()
+            callback(null)
+            return
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            callback(null)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                callback(location)
+            } else {
+                Toast.makeText(requireContext(), "Could not fetch location", Toast.LENGTH_SHORT).show()
+                callback(null)
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("LocationError", "Error fetching location: ${exception.message}")
+            callback(null)
+        }
+    }
 
     private fun predictWeather() {
         // Convert Bitmap to ByteArray in JPG format

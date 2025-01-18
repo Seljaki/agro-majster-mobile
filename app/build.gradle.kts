@@ -54,9 +54,13 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    //RecylclerView
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
 
     // lib
     implementation(project(":app:lib"))
@@ -71,4 +75,8 @@ dependencies {
 
     // Maps
     implementation("org.osmdroid:osmdroid-android:6.1.20")
+
+    //Weather
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

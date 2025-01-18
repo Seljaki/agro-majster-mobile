@@ -1,6 +1,8 @@
 package com.seljaki.agromajtermobile.fragments
 
 import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -15,26 +17,54 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.seljaki.agromajtermobile.BlockAdapter
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.databinding.FragmentMainBinding
+import com.seljaki.lib.Block
+import com.seljaki.lib.Blockchain
+import com.seljaki.lib.BlockchainClient
+import com.seljaki.lib.getBlockchain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+
 
 
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
     private lateinit var app: MyApplication
+    private lateinit var blockAdapter: BlockAdapter
     private val CAMERA_REQUEST_CODE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         app = requireActivity().application as MyApplication
+
+        if(app.blockchain.blocks.size == 0) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val blockchain = getBlockchain()
+                if (blockchain != null) {
+                    app.blockchain.blocks.addAll(blockchain.blocks)
+                    requireActivity().runOnUiThread {
+                        blockAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        }
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentMainBinding.inflate(layoutInflater, container, false)
+
+        blockAdapter = BlockAdapter(app.blockchain.blocks)
+        binding.blockchainRecyclerView.layoutManager = GridLayoutManager(context, 4)
+        binding.blockchainRecyclerView.adapter = blockAdapter
 
         return binding.root
     }
@@ -44,18 +74,23 @@ class MainFragment : Fragment() {
 
         binding.takePictureBtn.setOnClickListener{ launchCamera() }
         binding.openGalleryBtn.setOnClickListener{ openImage() }
+
+        app.blockchainClient.onNewBlockReceived = { block ->
+            requireActivity().runOnUiThread {
+                app.blockchain.blocks.add(block)
+                blockAdapter.notifyItemInserted(app.blockchain.blocks.size - 1)
+            }
+        }
     }
 
     private fun openImage() {
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
     }
 
-
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             try {
-                // Retrieve content resolver and decode URI to Bitmap
                 val contentResolver = requireContext().contentResolver
                 val inputStream = contentResolver.openInputStream(uri)
                 val bitmap = BitmapFactory.decodeStream(inputStream)

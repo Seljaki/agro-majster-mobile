@@ -1,13 +1,21 @@
 package com.seljaki.agromajtermobile.fragments
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Bitmap
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.navigation.fragment.findNavController
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.components.XAxis
@@ -15,9 +23,13 @@ import com.github.mikephil.charting.data.BarData
 import com.github.mikephil.charting.data.BarDataSet
 import com.github.mikephil.charting.data.BarEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.R
 import com.seljaki.agromajtermobile.databinding.FragmentProcessImageBinding
+import com.seljaki.agromajtermobile.weather.RetrofitClient
+import com.seljaki.lib.Blockchain
 import com.seljaki.lib.WeatherPrediction
 import com.seljaki.lib.recognizeWeather
 import kotlinx.coroutines.CoroutineScope
@@ -25,11 +37,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import com.seljaki.lib.BlockchainClient
+import com.seljaki.lib.Data
+import com.seljaki.lib.client
 
+//data class Location(
+//    val latitude: Double,
+//    val longitude: Double
+//)
 class ProcessImageFragment : Fragment() {
     private lateinit var binding: FragmentProcessImageBinding
     private lateinit var image: Bitmap
     private lateinit var app: MyApplication
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var prediction: WeatherPrediction
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +62,7 @@ class ProcessImageFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentProcessImageBinding.inflate(layoutInflater, container, false)
 
         return binding.main
@@ -57,6 +78,84 @@ class ProcessImageFragment : Fragment() {
             findNavController().popBackStack()
         }
         predictWeather()
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        binding.buttonBlockchain.setOnClickListener {
+
+            getUserLocation { location ->
+                if (location == null) {
+                    Log.d("Seznor info", "Ni bilo mogoče pridobiti trenutne lokacije.")
+                }
+                else {
+                    Log.d("Seznor info","lat: " + location.latitude + ", long: " + location.longitude)
+                    getTemperature(location.latitude, location.longitude) { temperature ->
+                        if (temperature != null) {
+                            Log.d("Seznor info", "Temperatura: $temperature °C")
+
+                            val dataToMine = Data(
+                                temperature = temperature,
+                                longitude = location.longitude,
+                                latitude = location.latitude,
+                                prediction = prediction
+                            )
+                            app.blockchainClient.sendDataToMine(dataToMine)
+                        } else {
+                            Log.d("Seznor info", "Ni bilo mogoče pridobiti temperature.")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    private fun getTemperature(latitude: Double, longitude: Double, callback: (Double?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitClient.instance.getWeather(latitude, longitude)
+                withContext(Dispatchers.Main) {
+                    callback(response.main.temp)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("WeatherError", e.message.toString())
+                    callback(null)
+                }
+            }
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getUserLocation(callback: (Location?) -> Unit) {
+        if (!isLocationEnabled()) {
+            Toast.makeText(requireContext(), "Please enable location services", Toast.LENGTH_SHORT).show()
+            callback(null)
+            return
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            callback(null)
+            return
+        }
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                callback(location)
+            } else {
+                Toast.makeText(requireContext(), "Could not fetch location", Toast.LENGTH_SHORT).show()
+                callback(null)
+            }
+        }.addOnFailureListener { exception ->
+            Log.e("LocationError", "Error fetching location: ${exception.message}")
+            callback(null)
+        }
     }
 
     private fun predictWeather() {
@@ -75,7 +174,7 @@ class ProcessImageFragment : Fragment() {
 
             // Call the server API
             CoroutineScope(Dispatchers.IO).launch {
-                val prediction = recognizeWeather(imageBytes, contentType)
+                prediction = recognizeWeather(imageBytes, contentType)!!
                 withContext(Dispatchers.Main) {
                     if (prediction != null) {
                         binding.predictionTextView.text =

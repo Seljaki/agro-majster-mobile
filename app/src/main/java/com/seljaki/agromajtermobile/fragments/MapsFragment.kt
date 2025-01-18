@@ -10,15 +10,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.core.content.res.ResourcesCompat.getDrawable
-import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.R
 import com.seljaki.agromajtermobile.databinding.FragmentMapsBinding
+import com.seljaki.agromajtermobile.showDataBottomSheet
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import java.time.Instant
 import java.util.Date
@@ -27,6 +28,7 @@ import kotlin.math.log
 class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     lateinit var binding: FragmentMapsBinding
     lateinit var app: MyApplication
+    private val args : MapsFragmentArgs by navArgs()
     var selectedTimeFrame: Long = 0
     val points: MutableList<GeoPoint> = mutableListOf()
 
@@ -76,6 +78,10 @@ class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
             points.add(geoPoint)
             val marker = Marker(map)
             marker.position = geoPoint
+            marker.setOnMarkerClickListener(Marker.OnMarkerClickListener { marker: Marker, mapView: MapView ->
+                showDataBottomSheet(block, requireContext())
+                true
+            })
             marker.title = "Block Info"
             marker.snippet = "Latitude: ${block.data.latitude}, Longitude: ${block.data.longitude}"
             //marker.infoWindow = MarkerInfoWindow(R.layout.bonuspack_bubble, map) // Optional, customize if needed
@@ -86,13 +92,14 @@ class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 else -> getDrawable(getResources(), R.drawable.rainy, requireActivity().theme);
             }
 
-            // Add the marker to the map
             map.overlays.add(marker)
         }
 
-        if (points.isNotEmpty()) {
-            val boundingBox = BoundingBox.fromGeoPointsSafe(points)
-            map.setExpectedCenter(points.get(0))
+        if (args.blockchainIndex != -1) {
+            map.setExpectedCenter(points[args.blockchainIndex])
+        } else if (points.isNotEmpty()) {
+            //val boundingBox = BoundingBox.fromGeoPointsSafe(points)
+            map.setExpectedCenter(GeoPoint(46.55739930, 15.64598200))
             //map.zoomToBoundingBox(boundingBox, true) // Adjusts zoom level to fit all markers
         }
         map.invalidate()

@@ -23,5 +23,10 @@
         android:id="@+id/mapsFragment"
         android:name="com.seljaki.agromajtermobile.fragments.MapsFragment"
         android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" /><action android:id="@+id/action_global_mapsFragment" app:destination="@id/mapsFragment"/><action android:id="@+id/action_global_mainFragment" app:destination="@id/mainFragment"/>
+        tools:layout="@layout/fragment_maps" >
+        <argument
+            android:name="blockchainIndex"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment><action android:id="@+id/action_global_mapsFragment" app:destination="@id/mapsFragment"/><action android:id="@+id/action_global_mainFragment" app:destination="@id/mainFragment"/>
 </navigation>

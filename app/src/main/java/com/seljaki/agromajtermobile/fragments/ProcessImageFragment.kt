@@ -28,6 +28,7 @@ import com.google.android.gms.location.LocationServices
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.R
 import com.seljaki.agromajtermobile.databinding.FragmentProcessImageBinding
+import com.seljaki.agromajtermobile.weather.RetrofitClient
 import com.seljaki.lib.Blockchain
 import com.seljaki.lib.WeatherPrediction
 import com.seljaki.lib.recognizeWeather
@@ -83,41 +84,43 @@ class ProcessImageFragment : Fragment() {
         binding.buttonBlockchain.setOnClickListener {
 
             getUserLocation { location ->
-                if (location != null) {
-                    Log.d("Seznor info","lat: " + location.latitude + ", long: " + location.longitude)
-                }
-                else {
+                if (location == null) {
                     Log.d("Seznor info", "Ni bilo mogoče pridobiti trenutne lokacije.")
                 }
+                else {
+                    Log.d("Seznor info","lat: " + location.latitude + ", long: " + location.longitude)
+                    getTemperature(location.latitude, location.longitude) { temperature ->
+                        if (temperature != null) {
+                            Log.d("Seznor info", "Temperatura: $temperature °C")
 
-                val dataToMine = location?.let { it1 ->
-                    Data(
-                        temperature = 0.0,
-                        longitude = it1.longitude,
-                        latitude = it1.latitude,
-                        prediction = prediction
-                    )
+                            val dataToMine = Data(
+                                temperature = temperature,
+                                longitude = location.longitude,
+                                latitude = location.latitude,
+                                prediction = prediction
+                            )
+                            app.blockchainClient.sendDataToMine(dataToMine)
+                        } else {
+                            Log.d("Seznor info", "Ni bilo mogoče pridobiti temperature.")
+                        }
+                    }
                 }
-                if (dataToMine != null) {
-                    app.blockchainClient.sendDataToMine(dataToMine)
-                }
-                
             }
-
-
-//            getCurrentLocationAndTemperature { latitude, longitude, temperature ->
-//
-//                Log.d("Seznor info","lat: " + latitude + ", long: " + longitude + ", temp: " + temperature)
-//
-//                val dataToMine = Data(
-//                    temperature = temperature,
-//                    longitude = longitude,
-//                    latitude = latitude,
-//                    prediction = prediction
-//                )
-//
-//                app.blockchainClient.sendDataToMine(dataToMine)
-//            }
+        }
+    }
+    private fun getTemperature(latitude: Double, longitude: Double, callback: (Double?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitClient.instance.getWeather(latitude, longitude)
+                withContext(Dispatchers.Main) {
+                    callback(response.main.temp)
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Log.e("WeatherError", e.message.toString())
+                    callback(null)
+                }
+            }
         }
     }
 
@@ -125,31 +128,6 @@ class ProcessImageFragment : Fragment() {
         val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
-
-    @SuppressLint("MissingPermission")
-    private fun getCurrentLocationAndTemperature(callback: (Double, Double, Double) -> Unit) {
-        if (!isLocationEnabled()) {
-            Toast.makeText(requireContext(), "Please enable location services", Toast.LENGTH_SHORT).show()
-        }
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                val latitude = location.latitude
-                val longitude = location.longitude
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    val temperature = 0.0
-                    withContext(Dispatchers.Main) {
-                        callback(latitude, longitude, temperature)
-                    }
-                }
-            } else {
-                Log.e("LocationError", "Ni bilo mogoče pridobiti trenutne lokacije.")
-            }
-        }.addOnFailureListener {
-            Log.e("LocationError", "Napaka pri pridobivanju lokacije: ${it.message}")
-        }
-    }
-
 
     @SuppressLint("MissingPermission")
     private fun getUserLocation(callback: (Location?) -> Unit) {

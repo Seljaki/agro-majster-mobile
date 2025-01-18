@@ -25,6 +25,10 @@ import com.seljaki.agromajtermobile.databinding.FragmentMainBinding
 import com.seljaki.lib.Block
 import com.seljaki.lib.Blockchain
 import com.seljaki.lib.BlockchainClient
+import com.seljaki.lib.getBlockchain
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 
@@ -38,6 +42,18 @@ class MainFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         app = requireActivity().application as MyApplication
+
+        if(app.blockchain.blocks.size == 0) {
+            CoroutineScope(Dispatchers.IO).launch {
+                val blockchain = getBlockchain()
+                if (blockchain != null) {
+                    app.blockchain.blocks.addAll(blockchain.blocks)
+                    requireActivity().runOnUiThread {
+                        blockAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        }
     }
 
     override fun onCreateView(
@@ -48,7 +64,6 @@ class MainFragment : Fragment() {
 
         blockAdapter = BlockAdapter(app.blockchain.blocks)
         binding.blockchainRecyclerView.layoutManager = GridLayoutManager(context, 4)
-        //val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         binding.blockchainRecyclerView.adapter = blockAdapter
 
         return binding.root
@@ -62,16 +77,10 @@ class MainFragment : Fragment() {
 
         app.blockchainClient.onNewBlockReceived = { block ->
             requireActivity().runOnUiThread {
+                app.blockchain.blocks.add(block)
                 blockAdapter.notifyItemInserted(app.blockchain.blocks.size - 1)
             }
         }
-
-        app.blockchainClient.onBlockchainReceived = { blockchain ->
-            requireActivity().runOnUiThread {
-                blockAdapter.notifyDataSetChanged()
-            }
-        }
-
     }
 
     private fun openImage() {

@@ -32,10 +32,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        /*if(checkNotificationPermissions(this)) {
+        if(checkNotificationPermissions(this)) {
             val serviceIntent: Intent = Intent(this, BlockchainService::class.java)
             ContextCompat.startForegroundService(this, serviceIntent)
-        }*/
+        }
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         navController = navHostFragment.navController

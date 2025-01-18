@@ -91,8 +91,8 @@ class MapsFragment : Fragment() {
         if (args.blockchainIndex != -1) {
             map.setExpectedCenter(points[args.blockchainIndex])
         } else if (points.isNotEmpty()) {
-            val boundingBox = BoundingBox.fromGeoPointsSafe(points)
-            //map.setExpectedCenter(points.get(0))
+            //val boundingBox = BoundingBox.fromGeoPointsSafe(points)
+            map.setExpectedCenter(GeoPoint(46.55739930, 15.64598200))
             //map.zoomToBoundingBox(boundingBox, true) // Adjusts zoom level to fit all markers
         }
     }

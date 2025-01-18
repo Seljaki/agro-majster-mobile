@@ -11,17 +11,13 @@ import androidx.navigation.fragment.navArgs
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.R
 import com.seljaki.agromajtermobile.databinding.FragmentMapsBinding
-import com.seljaki.lib.Blockchain
+import com.seljaki.agromajtermobile.showDataBottomSheet
 import org.osmdroid.config.Configuration
-import org.osmdroid.library.BuildConfig
-import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
-import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
+import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow
-import java.util.UUID
 
 class MapsFragment : Fragment() {
     lateinit var binding: FragmentMapsBinding
@@ -74,6 +70,10 @@ class MapsFragment : Fragment() {
 
             val marker = Marker(map)
             marker.position = geoPoint
+            marker.setOnMarkerClickListener(Marker.OnMarkerClickListener { marker: Marker, mapView: MapView ->
+                showDataBottomSheet(block, requireContext())
+                true
+            })
             marker.title = "Block Info"
             marker.snippet = "Latitude: ${block.data.latitude}, Longitude: ${block.data.longitude}"
             //marker.infoWindow = MarkerInfoWindow(R.layout.bonuspack_bubble, map) // Optional, customize if needed
@@ -84,7 +84,6 @@ class MapsFragment : Fragment() {
                 else -> getDrawable(getResources(), R.drawable.rainy, requireActivity().theme);
             }
 
-            // Add the marker to the map
             map.overlays.add(marker)
         }
 

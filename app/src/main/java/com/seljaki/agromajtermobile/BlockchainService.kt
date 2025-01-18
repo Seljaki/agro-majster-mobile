@@ -18,6 +18,7 @@ import java.util.Date
 class BlockchainService: Service() {
     lateinit var blockchainClient: BlockchainClient
     private var isServiceStarted = false
+    private val channelId = "blockchain_channel"
 
     override fun onCreate() {
         super.onCreate()
@@ -37,15 +38,7 @@ class BlockchainService: Service() {
             )
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "mqtt_channel",
-                "MQTT Notifications",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(channel)
-        }
+        createNotificationChannel()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -57,37 +50,39 @@ class BlockchainService: Service() {
 
         return START_STICKY
     }
-    private fun startForegroundServiceWithNotification() {
-        val notification = NotificationCompat.Builder(this, "blockchain_channel")
-            .setContentTitle("Blockchain Service")
-            .setContentText("Listening for blockchain updates...")
-            .setSmallIcon(R.drawable.stat_notify_chat)
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .build()
 
-        // Create the notification channel if on API level 26+
+    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "mqtt_channel",
+                channelId,
                 "Blockchain Service",
                 NotificationManager.IMPORTANCE_LOW
             )
+            channel.description = "Notifications for Blockchain Service"
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
+    }
 
-        // Start the service as a foreground service
+    private fun startForegroundServiceWithNotification() {
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Blockchain Service")
+            .setContentText("Listening for blockchain updates...")
+            .setSmallIcon(com.seljaki.agromajtermobile.R.drawable.tractor) // Use your app's icon
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+
         startForeground(1, notification)
     }
 
     private fun sendNotification(message: String) {
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        val notification: Notification = NotificationCompat.Builder(this, "mqtt_channel")
+        val notification: Notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("New block added to the blockchain")
             .setStyle(NotificationCompat.BigTextStyle().bigText(message))
-            .setSmallIcon(R.drawable.stat_notify_chat)
+            .setSmallIcon(com.seljaki.agromajtermobile.R.drawable.tractor)
             .build()
-        manager.notify(1, notification)
+        manager.notify(2, notification)
     }
 
     override fun onDestroy() {

@@ -10,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.core.content.res.ResourcesCompat.getDrawable
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.seljaki.agromajtermobile.MyApplication
 import com.seljaki.agromajtermobile.R
@@ -21,9 +22,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import java.time.Instant
-import java.util.Date
-import kotlin.math.log
+
 
 class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
     lateinit var binding: FragmentMapsBinding
@@ -74,7 +73,7 @@ class MapsFragment : Fragment(), AdapterView.OnItemSelectedListener {
         for(block in blocks) {
             if(block.index == 0 || (block.timestamp < selectedTimeFrame && selectedTimeFrame != 0L)) continue
             Log.d("MapsFragment", "Processing block: index=${block.index}, timestamp=${block.timestamp}, selectedTimeFrame=$selectedTimeFrame")
-            val geoPoint = GeoPoint(block.data.longitude, block.data.latitude)
+            val geoPoint = GeoPoint(block.data.latitude, block.data.longitude)
             points.add(geoPoint)
             val marker = Marker(map)
             marker.position = geoPoint

@@ -82,7 +82,6 @@ class ProcessImageFragment : Fragment() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         binding.buttonBlockchain.setOnClickListener {
-
             getUserLocation { location ->
                 if (location == null) {
                     Log.d("Seznor info", "Ni bilo mogoče pridobiti trenutne lokacije.")
@@ -100,6 +99,7 @@ class ProcessImageFragment : Fragment() {
                                 prediction = prediction
                             )
                             app.blockchainClient.sendDataToMine(dataToMine)
+                            findNavController().popBackStack()
                         } else {
                             Log.d("Seznor info", "Ni bilo mogoče pridobiti temperature.")
                         }
@@ -108,6 +108,7 @@ class ProcessImageFragment : Fragment() {
             }
         }
     }
+
     private fun getTemperature(latitude: Double, longitude: Double, callback: (Double?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {

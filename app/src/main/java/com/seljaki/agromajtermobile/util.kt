@@ -30,12 +30,14 @@ fun showDataBottomSheet(block: Block, context: Context){
         bottomSheetDialog.dismiss()
     }
 
-    binding.indexTextView.text = "Index: ${block.index}"
-    binding.timestampTextView.text = "Date: ${convertTimestampToReadableDate(block.timestamp)}"
+    binding.indexTextView.text = context.getString(R.string.index, block.index.toString())
+    binding.timestampTextView.text = context.getString(R.string.date, convertTimestampToReadableDate(block.timestamp))
     setChart(block.data.prediction, binding, context)
     binding.predictionTextView.text = context.getString(R.string.predicted_weather, block.data.prediction.getPredicted())
-    binding.temperatureTextView.text = "Temperature: ${block.data.temperature}"
-    binding.locationTextView.text = "Longtitude: ${block.data.longitude} Latitude: ${block.data.latitude}"
+    binding.temperatureTextView.text =
+        context.getString(R.string.temperature, block.data.temperature.toString())
+    binding.locationTextView.text =
+        context.getString(R.string.longtitude_latitude, block.data.longitude.toString(), block.data.latitude.toString())
 
     bottomSheetDialog.show()
 }

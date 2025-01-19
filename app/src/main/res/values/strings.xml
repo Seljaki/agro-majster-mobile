@@ -10,4 +10,14 @@
     <string name="send_to_blockchain">Send to blockchain</string>
     <string name="view_location_button">View Location</string>
     <string name="display_markers_added">Show weather added:</string>
+    <string name="block">Block: %1$s</string>
+    <string name="index">Index: %1$s</string>
+    <string name="date">Date: %1$s</string>
+    <string name="difficulty">Difficulty: %1$s</string>
+    <string name="miner">Miner: %1$s</string>
+    <string name="nonce">Nonce: %1$s</string>
+    <string name="hash">Hash: %1$s</string>
+    <string name="prev_hash">Prev Hash: %1$s</string>
+    <string name="temperature">Temperature: %1$s</string>
+    <string name="longtitude_latitude">Longtitude: %1$s Latitude: %2$s</string>
 </resources>

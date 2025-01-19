@@ -51,7 +51,7 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         val block = blocks[position]
         val binding = holder.binding
 
-        binding.indexTextView.text = "Block: ${block.index}"
+        binding.indexTextView.text = context.getString(R.string.block, block.index.toString())
         //binding.timestampPlaceHolderTextView.text = convertTimestampToReadableDate(block.timestamp)
         //binding.difficultyPlaceholderTextView.text = municipality.toString()
         binding.weatherPredictionPlaceHolderTextView.text = block.data.prediction.getPredicted()
@@ -74,8 +74,6 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         return blocks.size
     }
 
-
-
     private fun getPredictionImage(prediction: String): Drawable{
         return when (prediction){
             "cloudy" -> ContextCompat.getDrawable(context, R.drawable.cloudy)!!
@@ -89,13 +87,14 @@ class BlockAdapter(private val blocks: List<Block>) : RecyclerView.Adapter<Block
         val binding = BottomSheetBlockDetailsBinding.inflate(LayoutInflater.from(context))
         bottomSheetDialog.setContentView(binding.root)
 
-        binding.indexTextView.text = "Index: ${block.index}"
-        binding.timestampTextView.text = "Date: ${convertTimestampToReadableDate(block.timestamp)}"
-        binding.difficultyTextViewBD.text = "Difficulty: ${block.difficulty}"
-        binding.minerTextView.text = "Miner: ${block.miner ?: "No miner"}"
-        binding.nonceTextView.text = "Nonce: ${block.nonce}"
-        binding.hashTextViewBD.text = "Hash: ${block.hash}"
-        binding.prevHashTextViewBD.text = "Prev Hash: ${block.previousHash}"
+        binding.indexTextView.text = context.getString(R.string.index, block.index.toString())
+        binding.timestampTextView.text =
+            context.getString(R.string.date, convertTimestampToReadableDate(block.timestamp))
+        binding.difficultyTextViewBD.text = context.getString(R.string.difficulty, block.difficulty.toString())
+        binding.minerTextView.text = context.getString(R.string.miner, block.miner ?: "No miner")
+        binding.nonceTextView.text = context.getString(R.string.nonce, block.nonce.toString())
+        binding.hashTextViewBD.text = context.getString(R.string.hash, block.hash)
+        binding.prevHashTextViewBD.text = context.getString(R.string.prev_hash, block.previousHash)
 
         bottomSheetDialog.show()
     }
